@@ -14,15 +14,15 @@ let playerWord = ''
 const lifesText = 'Lifes:'
 let lifes = 3
 const scoreText = 'Score:'
-let playerScorePlaceHolder = 0
-let player1Score = 0
-let player2Score = 0
+let yourScore = 'Your score:'
+let score = 0
 const winnerText = 'Victory!'
 const gameOverText = 'Game Over'
 const timerText = 'Timer:'
-let timer = 150
+let timer = 30
 
 const mainTheme = new Audio('./audio/001. Swarm (Intro).mp3')
+mainTheme.volume = 0.5
 const machinegun = new Audio('./audio/marineFire.wav')
 const loseLife = new Audio('./audio/marineDeath.wav')
 const hydraliskDeath = new Audio('./audio/hydraDeath.wav')
@@ -173,10 +173,10 @@ function scoreWord() {
 
 //Function to draw score number for player.
 function scoreNumber() {
-  player1Score.toString()
+  score.toString()
   ctx.font = '30px Arial'
   ctx.fillStyle = 'white'
-  ctx.fillText(playerScorePlaceHolder, 150, 150, 300)
+  ctx.fillText(score, 150, 150, 300)
 }
 
 //Function to draw timer.
@@ -192,6 +192,13 @@ function drawSeconds() {
   ctx.font = '30px Arial'
   ctx.fillStyle = 'white'
   ctx.fillText(timer, 1050, 100, 300)
+}
+
+//Function to draw player word
+function writePlayerWord() {
+  ctx.font = '15px Arial'
+  ctx.fillStyle = 'white'
+  ctx.fillText(playerWord, 230, 680, 200)
 }
 
 //Function to reduce life and call game over.
@@ -211,6 +218,7 @@ function reduceLife() {
 function checkVictory() {
   timer -= 1
   if (timer == 0) {
+    mainTheme.pause()
     return victory()
   }
 }
@@ -220,6 +228,7 @@ function update() {
   frames++
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   background.draw()
+  writePlayerWord()
   generateZerg()
   command.draw()
   drawTimer()
@@ -231,15 +240,9 @@ function update() {
   scoreWord()
   scoreNumber()
   reduceLife()
-  //console.log(frames)
-  //zerg.drawWord()
-  //zerg.generateWord()
-  //zerg.drawWord()
-  //generateWord()
-  //drawWord()
-  //console.log(reduceFrequencyEnemyAppears)
-  //console.log(randomFrames)
 }
+
+
 
 //Function to start the game.
 function startGame() {
@@ -257,6 +260,13 @@ function victory() {
   ctx.font = '30px Arial'
   ctx.fillStyle = 'white'
   ctx.fillText(winnerText, 500, 500, 500)
+  ctx.font = '30px Arial'
+  ctx.fillStyle = 'white'
+  ctx.fillText(yourScore, 430, 550, 500)
+  score.toString()
+  ctx.font = '30px Arial'
+  ctx.fillStyle = 'white'
+  ctx.fillText(score, 600, 550, 500)
   youWin.play()
 }
 
@@ -276,16 +286,16 @@ function gameOver() {
 //Functions to make the sound. The main theme I need to put it in a button.
 
 document.addEventListener('keydown', ({ keyCode }) => {
-  switch (keyCode) {
-    case 32:
-      mainTheme.play() //I have to pass this to a start button event.
-  }
   if (keyCode >= 65 && keyCode <= 90) {
     machinegun.play()
   }
 })
 
 document.addEventListener('keydown', ({ keyCode }) => {
+
+  if (keyCode === 8) {
+    playerWord = ''
+  }
 
   let key = String.fromCharCode(keyCode)
   if (keyCode >= 65 && keyCode <= 90) {
@@ -300,7 +310,7 @@ document.addEventListener('keydown', ({ keyCode }) => {
       enemies.splice(0,1)
       hydraliskDeath.play()
       playerWord = ''
-      playerScorePlaceHolder += 10
+      score += 10
       }
     }
   }
@@ -308,7 +318,8 @@ document.addEventListener('keydown', ({ keyCode }) => {
 
 window.onload = function() {
   document.getElementById("start").onclick = function() {
-    startGame();
+    mainTheme.play()
+    startGame()
   };
 };
 
