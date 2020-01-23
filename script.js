@@ -5,6 +5,7 @@ const $gameBoard = document.getElementById('game-board')
 
 let interval
 let intervalEnemyAppears
+let intervalForVictory
 let frames = 0
 let frequencyEnemyAppears = 500
 let enemies = []
@@ -12,18 +13,28 @@ let enemyWords = []
 let playerWord = ''
 const lifesText = 'Lifes:'
 let lifes = 3
-const scorePlayer1 = 'Score:'
+const scoreText = 'Score:'
+let playerScorePlaceHolder = 0
 let player1Score = 0
-//let randomWords = 0
-//let randomFrames = 0
+let player2Score = 0
+const winnerText = 'Victory!'
+const gameOverText = 'Game Over'
+const timerText = 'Timer:'
+let timer = 150
 
 const mainTheme = new Audio('./audio/001. Swarm (Intro).mp3')
 const machinegun = new Audio('./audio/marineFire.wav')
+const loseLife = new Audio('./audio/marineDeath.wav')
 const hydraliskDeath = new Audio('./audio/hydraDeath.wav')
 const youWin = new Audio('./audio/youWin.wav')
 const youLose = new Audio('./audio/youLose.wav')
 
-const easyNames = ['zerg', 'ling', 'hydra', 'lisk', 'guard', 'over', 'mind', 'ultra', 'roach']
+const names = [
+'zerg', 'ling', 'hydra', 'lisk', 'guard', 'over', 'mind', 'ultra', 'roach', 
+'zergli', 'hydrali', 'liguard', 'overmi', 'ultrali', 'roachy', 'ultrahy',
+'zergling', 'hydralisk', 'roachling', 'overmind', 'ultralisk', 'hybridover', 'overlord'
+]
+//const easyNames = ['zerg', 'ling', 'hydra', 'lisk', 'guard', 'over', 'mind', 'ultra', 'roach']
 //const mediumNames = ['zergli', 'hydrali', 'liguard', 'overmi', 'ultrali', 'roachhy', 'ultrahy']
 //const hardNames = ['zergling', 'hydralisk', 'roachling', 'overmind', 'ultralisk', 'hybridover', 'overlord']
 
@@ -32,8 +43,16 @@ const images = {
   commandCenter: './Images/SC Command Center.png',
   marine: './Images/player.png',
   hydralisk: './Images/hydralisk.png',
-  gOver: './Images/gameOver.jpg'
+  gOver: './Images/SCgameOver.png',
+  win: './Images/SCVictoryScreen.png'
 }
+
+//Instances of win and game over.
+const winner = new Image()
+winner.src = images.win
+const gameOverScreen = new Image()
+gameOverScreen.src = images.gOver
+
 
 //Classes for creating the game objects.
 class Background {
@@ -52,11 +71,6 @@ class Background {
     ctx.drawImage(this.background, this.x, this.y, canvas.width, canvas.height)
   }
 }
-
-//class YouWin {}
-
-const gameOverScreen = new Image()
-gameOverScreen.src = images.gOver
 
 class CommandCenter {
   constructor() {
@@ -94,7 +108,7 @@ class Zerg {
     this.height = 140
     this.zerg = new Image()
     this.zerg.src = images.hydralisk
-    this.word = easyNames[Math.floor(Math.random() * 9)]
+    this.word = names[Math.floor(Math.random() * 23)]
   }
   draw() {
     this.x--
@@ -130,7 +144,7 @@ function drawZerg() {
 
 //Function to reduce framesEnemyAppears
 function reduceFrequencyEnemyAppears() {
-  if (frequencyEnemyAppears > 100) {
+  if (frequencyEnemyAppears >= 100) {
     frequencyEnemyAppears -= 100
   }
 }
@@ -150,31 +164,55 @@ function lifeNumber() {
   ctx.fillText(lifes, 150, 100, 300)
 }
 
-//Function to draw score word.
+//Function to draw score word for player.
 function scoreWord() {
   ctx.font = '30px Arial'
   ctx.fillStyle = 'white'
-  ctx.fillText(scorePlayer1, 50, 150, 300)
+  ctx.fillText(scoreText, 50, 150, 300)
 }
 
-//Function to draw score number.
+//Function to draw score number for player.
 function scoreNumber() {
   player1Score.toString()
   ctx.font = '30px Arial'
   ctx.fillStyle = 'white'
-  ctx.fillText(player1Score, 150, 150, 300)
+  ctx.fillText(playerScorePlaceHolder, 150, 150, 300)
 }
 
+//Function to draw timer.
+function drawTimer() {
+  ctx.font = '30px Arial'
+  ctx.fillStyle = 'white'
+  ctx.fillText(timerText, 950, 100, 300)
+}
+
+//Function to draw seconds.
+function drawSeconds() {
+  timer.toString()
+  ctx.font = '30px Arial'
+  ctx.fillStyle = 'white'
+  ctx.fillText(timer, 1050, 100, 300)
+}
+
+//Function to reduce life and call game over.
 function reduceLife() {
   if (enemies[0].x < 20) {
     lifes--
     enemies.splice(0,1)
+    loseLife.play()
   }
 
   if(lifes == 0) {
     return gameOver()
   }
+}
 
+//Function to call Victory
+function checkVictory() {
+  timer -= 1
+  if (timer == 0) {
+    return victory()
+  }
 }
 
 //Functions to update the game.
@@ -184,6 +222,8 @@ function update() {
   background.draw()
   generateZerg()
   command.draw()
+  drawTimer()
+  drawSeconds()
   drawZerg()
   marine.draw()
   showLifeText()
@@ -191,7 +231,7 @@ function update() {
   scoreWord()
   scoreNumber()
   reduceLife()
-  console.log(frames)
+  //console.log(frames)
   //zerg.drawWord()
   //zerg.generateWord()
   //zerg.drawWord()
@@ -204,25 +244,39 @@ function update() {
 //Function to start the game.
 function startGame() {
   interval = setInterval(update, 1000 / 60)
-  intervalEnemyAppears = setInterval(reduceFrequencyEnemyAppears, 35000)
+  intervalEnemyAppears = setInterval(reduceFrequencyEnemyAppears, 30000)
+  intervalForVictory = setInterval(checkVictory, 1000)
+}
+
+//Function for win.
+function victory() {
+  clearInterval(interval)
+  clearInterval(intervalEnemyAppears)
+  ctx.clearRect(0,0,canvas.width,canvas.height)
+  ctx.drawImage(winner, 0, 0, canvas.width, canvas.height)
+  ctx.font = '30px Arial'
+  ctx.fillStyle = 'white'
+  ctx.fillText(winnerText, 500, 500, 500)
+  youWin.play()
 }
 
 //Function for game over.
 function gameOver() {
   clearInterval(interval)
   clearInterval(intervalEnemyAppears)
+  clearInterval(intervalForVictory)
   ctx.clearRect(0,0,canvas.width,canvas.height)
-  ctx.fillStyle = 'black'
-  ctx.fillRect(0,0, canvas.width,canvas.height)
-  ctx.drawImage(gameOverScreen,430,250,300,300)
+  //ctx.fillStyle = 'black'
+  //ctx.fillRect(0,0, canvas.width,canvas.height)
+  ctx.drawImage(gameOverScreen, 0, 0, canvas.width, canvas.height)
+  ctx.font = '30px Arial'
+  ctx.fillStyle = 'white'
+  ctx.fillText(gameOverText, 500, 600, 300)
   youLose.play()
 }
 
-//width="1150" height="800"
-
-
-
 //Functions to make the sound. The main theme I need to put it in a button.
+
 document.addEventListener('keydown', ({ keyCode }) => {
   switch (keyCode) {
     case 32:
@@ -238,7 +292,7 @@ document.addEventListener('keydown', ({ keyCode }) => {
   let key = String.fromCharCode(keyCode)
   if (keyCode >= 65 && keyCode <= 90) {
     playerWord += key
-    console.log(playerWord)
+    //console.log(playerWord)
     }
 
   if (keyCode === 13) {
@@ -247,17 +301,24 @@ document.addEventListener('keydown', ({ keyCode }) => {
     } else if (playerWord.toLowerCase() === enemies[0].word) {
       enemies.splice(0,1)
       hydraliskDeath.play()
-      player1Score++
       playerWord = ''
+      playerScorePlaceHolder += 10
       }
     }
   }
 )
 
+//startGame() //I have to past this to a start button
 
 
 
-  /*if (keyCode >= 65 && keyCode <= 90) {
+
+
+
+
+/*
+
+  if (keyCode >= 65 && keyCode <= 90) {
     playerWord.push(key).join('')
     }
 
@@ -265,7 +326,34 @@ document.addEventListener('keydown', ({ keyCode }) => {
     zerg.splice(0, 1)
     }
   }
-  */
 
 
-//startGame() //I have to past this to a start button
+function lifeOver3() {
+  if(lifes >= 1) {
+    document.addEventListener('keydown', ({ keyCode }) => {
+      if (keyCode >= 65 && keyCode <= 90) {
+        machinegun.play()
+      }
+
+      let key = String.fromCharCode(keyCode)
+      if (keyCode >= 65 && keyCode <= 90) {
+        playerWord += key
+        console.log(playerWord)
+      }
+
+      if (keyCode === 13) {
+        if (playerWord.toLowerCase() != enemies[0].word) {
+          playerWord = ''
+        } else if (playerWord.toLowerCase() === enemies[0].word) {
+          enemies.splice(0,1)
+          hydraliskDeath.play()
+          player1Score += 10
+          playerWord = ''
+        }
+      }
+    })
+  }
+}
+
+lifeOver3()
+*/
