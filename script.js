@@ -20,7 +20,7 @@ let player2Score = 0
 const winnerText = 'Victory!'
 const gameOverText = 'Game Over'
 const timerText = 'Timer:'
-let timer = 60
+let timer = 150
 
 const mainTheme = new Audio('./audio/001. Swarm (Intro).mp3')
 const machinegun = new Audio('./audio/marineFire.wav')
