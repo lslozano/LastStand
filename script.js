@@ -20,7 +20,7 @@ let player2Score = 0
 const winnerText = 'Victory!'
 const gameOverText = 'Game Over'
 const timerText = 'Timer:'
-let timer = 150
+let timer = 60
 
 const mainTheme = new Audio('./audio/001. Swarm (Intro).mp3')
 const machinegun = new Audio('./audio/marineFire.wav')
@@ -266,8 +266,6 @@ function gameOver() {
   clearInterval(intervalEnemyAppears)
   clearInterval(intervalForVictory)
   ctx.clearRect(0,0,canvas.width,canvas.height)
-  //ctx.fillStyle = 'black'
-  //ctx.fillRect(0,0, canvas.width,canvas.height)
   ctx.drawImage(gameOverScreen, 0, 0, canvas.width, canvas.height)
   ctx.font = '30px Arial'
   ctx.fillStyle = 'white'
@@ -308,52 +306,7 @@ document.addEventListener('keydown', ({ keyCode }) => {
   }
 )
 
-//startGame() //I have to past this to a start button
+startGame() //I have to past this to a start button
 
 
 
-
-
-
-
-/*
-
-  if (keyCode >= 65 && keyCode <= 90) {
-    playerWord.push(key).join('')
-    }
-
-  if(playerWord[0] === zerg.word[0]) {
-    zerg.splice(0, 1)
-    }
-  }
-
-
-function lifeOver3() {
-  if(lifes >= 1) {
-    document.addEventListener('keydown', ({ keyCode }) => {
-      if (keyCode >= 65 && keyCode <= 90) {
-        machinegun.play()
-      }
-
-      let key = String.fromCharCode(keyCode)
-      if (keyCode >= 65 && keyCode <= 90) {
-        playerWord += key
-        console.log(playerWord)
-      }
-
-      if (keyCode === 13) {
-        if (playerWord.toLowerCase() != enemies[0].word) {
-          playerWord = ''
-        } else if (playerWord.toLowerCase() === enemies[0].word) {
-          enemies.splice(0,1)
-          hydraliskDeath.play()
-          player1Score += 10
-          playerWord = ''
-        }
-      }
-    })
-  }
-}
-
-lifeOver3()
-*/

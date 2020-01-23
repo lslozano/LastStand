@@ -10,3 +10,25 @@ canvas {
   margin-left: 150px;
   border: 1px solid black;
 }
+
+.start-instructions {
+  display: flex;
+  justify-content: start;
+  height: 30px;
+  margin-top: 0px;
+}
+
+.start-instructions > p {
+  padding-left: 30px;
+  font-size: 20px;
+  color: white;
+  margin-top: 0px;
+}
+
+#start {
+  height: 30px;
+  width: 120px;
+  border: 3px solid gray;
+  background-color: red;
+  color: white;
+}
