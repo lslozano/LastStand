@@ -306,7 +306,13 @@ document.addEventListener('keydown', ({ keyCode }) => {
   }
 )
 
-startGame() //I have to past this to a start button
+window.onload = function() {
+  document.getElementById("start").onclick = function() {
+    startGame();
+  };
+};
+
+//startGame() //I have to past this to a start button
 
 
 
