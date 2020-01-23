@@ -1,0 +1,12 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  background-color: rgb(21, 21, 44);
+  /*background-color: rgb(9, 9, 29)*/
+}
+
+canvas {
+  margin-top: 10px;
+  margin-left: 150px;
+  border: 1px solid black;
+}
