@@ -3,6 +3,9 @@ const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 const $startButton = document.getElementById("start")
 
+
+let player1_score = 0
+let player2_score = 0
 let interval
 let intervalEnemyAppears
 let intervalForVictory
@@ -286,7 +289,6 @@ function update() {
   scoreWord()
   scoreNumber()
   reduceLife()
-  console.log(frames)
 }
 
 //Function to start the game.
@@ -307,20 +309,28 @@ function startSecondGame() {
 function victory() {
   clearInterval(interval)
   clearInterval(intervalEnemyAppears)
-
+  interval = null
   ctx.clearRect(0,0,canvas.width,canvas.height)
   ctx.drawImage(winner, 0, 0, canvas.width, canvas.height)
   ctx.font = '30px Arial'
   ctx.fillStyle = 'white'
-  ctx.fillText(winnerText, 500, 500, 500)
-  ctx.font = '30px Arial'
-  ctx.fillStyle = 'white'
-  ctx.fillText(yourScore, 430, 550, 500)
-  score.toString()
-  ctx.font = '30px Arial'
-  ctx.fillStyle = 'white'
-  ctx.fillText(score, 600, 550, 500)
+  ctx.fillText(winnerText, 500, 600, 500)
   youWin.play()
+  player2_score = (player1_score > 0)?score: 0
+  player1_score = (player1_score === 0)?score:player1_score
+  whoWins()
+}
+
+//mandar llamar desde game over y desde victory 
+function whoWins() {
+  const playerWin = player1_score > player2_score ? "Player 1": "Player 2"
+  const scoreWin = player1_score > player2_score ? player1_score: player2_score
+  const messageWin = `${playerWin} wins with ${scoreWin} points`
+  if (player1_score > 0 && player2_score > 0) {
+    ctx.font = '30px Arial'
+    ctx.fillStyle = 'white'
+    ctx.fillText(messageWin, 450, 500, 500)
+  }
 }
 
 //Function for game over.
@@ -328,12 +338,17 @@ function gameOver() {
   clearInterval(interval)
   clearInterval(intervalEnemyAppears)
   clearInterval(intervalForVictory)
+  interval=null
+  mainTheme.pause()
   ctx.clearRect(0,0,canvas.width,canvas.height)
   ctx.drawImage(gameOverScreen, 0, 0, canvas.width, canvas.height)
   ctx.font = '30px Arial'
   ctx.fillStyle = 'white'
   ctx.fillText(gameOverText, 500, 600, 300)
   youLose.play()
+  player2_score = (player1_score > 0)?score: 0
+  player1_score = (player1_score === 0)?score:player1_score
+  whoWins()  
 }
 
 //Functions to make the sound. The main theme I need to put it in a button.
@@ -371,7 +386,16 @@ document.getElementById("player1").onclick = function() {
 }
 
 document.getElementById("player2").onclick = function() {
+  mainTheme.currentTime = 0
   mainTheme.play()
+  frames = 0
+  frequencyEnemyAppears = 500
+  enemies = []
+  enemyWords = []
+  playerWord = ''
+  lifes = 3
+  timer = 150
+  score = 0
   startGame()
 }
 
