@@ -20,13 +20,21 @@ canvas {
 
 .start-instructions > p {
   padding-left: 30px;
-  font-size: 20px;
+  font-size: 40px;
   color: white;
   margin-top: 0px;
 }
 
-#start {
-  height: 30px;
+#player1 {
+  height: 40px;
+  width: 120px;
+  border: 3px solid gray;
+  background-color: red;
+  color: white;
+}
+
+#player2 {
+  height: 40px;
   width: 120px;
   border: 3px solid gray;
   background-color: red;

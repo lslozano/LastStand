@@ -1,7 +1,7 @@
 //Primary
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
-const $gameBoard = document.getElementById('game-board')
+const $startButton = document.getElementById("start")
 
 let interval
 let intervalEnemyAppears
@@ -19,7 +19,7 @@ let score = 0
 const winnerText = 'Victory!'
 const gameOverText = 'Game Over'
 const timerText = 'Timer:'
-let timer = 30
+let timer = 150
 
 const mainTheme = new Audio('./audio/001. Swarm (Intro).mp3')
 mainTheme.volume = 0.5
@@ -29,14 +29,9 @@ const hydraliskDeath = new Audio('./audio/hydraDeath.wav')
 const youWin = new Audio('./audio/youWin.wav')
 const youLose = new Audio('./audio/youLose.wav')
 
-const names = [
-'zerg', 'ling', 'hydra', 'lisk', 'guard', 'over', 'mind', 'ultra', 'roach', 
-'zergli', 'hydrali', 'liguard', 'overmi', 'ultrali', 'roachy', 'ultrahy',
-'zergling', 'hydralisk', 'roachling', 'overmind', 'ultralisk', 'hybridover', 'overlord'
-]
-//const easyNames = ['zerg', 'ling', 'hydra', 'lisk', 'guard', 'over', 'mind', 'ultra', 'roach']
-//const mediumNames = ['zergli', 'hydrali', 'liguard', 'overmi', 'ultrali', 'roachhy', 'ultrahy']
-//const hardNames = ['zergling', 'hydralisk', 'roachling', 'overmind', 'ultralisk', 'hybridover', 'overlord']
+const easyNames = ['zerg', 'ling', 'hydra', 'lisk', 'guard', 'over', 'mind', 'ultra', 'roach']
+const mediumNames = ['zergli', 'hydrali', 'liguard', 'overmi', 'ultrali', 'roachy', 'ultrahy']
+const hardNames = ['zergling', 'hydralisk', 'roachling', 'overmind', 'ultralisk', 'hybridover', 'overlord']
 
 const images = {
   bg: './Images/bgGame.jpg',
@@ -100,7 +95,7 @@ class Marine {
   }
 }
 
-class Zerg {
+class ZergEasy {
   constructor() {
     this.x = canvas.width
     this.y = 640
@@ -108,7 +103,51 @@ class Zerg {
     this.height = 140
     this.zerg = new Image()
     this.zerg.src = images.hydralisk
-    this.word = names[Math.floor(Math.random() * 23)]
+    this.word = easyNames[Math.floor(Math.random() * 9)]
+  }
+  draw() {
+    this.x--
+    ctx.drawImage(this.zerg, this.x, this.y, this.width, this.height)
+  }
+  drawWord() {
+    this.x--
+    ctx.font = '30px Arial'
+    ctx.fillStyle = 'white'
+    ctx.fillText(this.word, this.x, this.y, this.width)
+  }
+}
+
+class ZergMedium {
+  constructor() {
+    this.x = canvas.width
+    this.y = 640
+    this.width = 140
+    this.height = 140
+    this.zerg = new Image()
+    this.zerg.src = images.hydralisk
+    this.word = mediumNames[Math.floor(Math.random() * 7)]
+  }
+  draw() {
+    this.x--
+    ctx.drawImage(this.zerg, this.x, this.y, this.width, this.height)
+  }
+  drawWord() {
+    this.x--
+    ctx.font = '30px Arial'
+    ctx.fillStyle = 'white'
+    ctx.fillText(this.word, this.x, this.y, this.width)
+  }
+}
+
+class ZergHard {
+  constructor() {
+    this.x = canvas.width
+    this.y = 640
+    this.width = 140
+    this.height = 140
+    this.zerg = new Image()
+    this.zerg.src = images.hydralisk
+    this.word = hardNames[Math.floor(Math.random() * 6)]
   }
   draw() {
     this.x--
@@ -126,13 +165,20 @@ class Zerg {
 const background = new Background()
 const command = new CommandCenter()
 const marine = new Marine()
-const zerg = new Zerg()
+const zergE = new ZergEasy()
+const zergM = new ZergMedium()
+const zergH = new ZergHard()
 
 //Generate Zerg.
 function generateZerg() {
-  if(frames % frequencyEnemyAppears === 0) {
-    enemies.push(new Zerg())
-    console.log(enemies)
+  if (frames % frequencyEnemyAppears === 0) {
+    if (frames < 2500) {
+      enemies.push(new ZergEasy())
+    } else if (frames > 2500 && frames < 6800) {
+      enemies.push(new ZergMedium())
+    } else if (frames > 6800) {
+      enemies.push(new ZergHard())
+    }
   }
 }
 
@@ -144,7 +190,7 @@ function drawZerg() {
 
 //Function to reduce framesEnemyAppears
 function reduceFrequencyEnemyAppears() {
-  if (frequencyEnemyAppears >= 100) {
+  if (frequencyEnemyAppears > 200) {
     frequencyEnemyAppears -= 100
   }
 }
@@ -240,12 +286,18 @@ function update() {
   scoreWord()
   scoreNumber()
   reduceLife()
+  console.log(frames)
 }
-
-
 
 //Function to start the game.
 function startGame() {
+  interval = setInterval(update, 1000 / 60)
+  intervalEnemyAppears = setInterval(reduceFrequencyEnemyAppears, 30000)
+  intervalForVictory = setInterval(checkVictory, 1000)
+}
+
+//Function to start second game.
+function startSecondGame() {
   interval = setInterval(update, 1000 / 60)
   intervalEnemyAppears = setInterval(reduceFrequencyEnemyAppears, 30000)
   intervalForVictory = setInterval(checkVictory, 1000)
@@ -255,6 +307,7 @@ function startGame() {
 function victory() {
   clearInterval(interval)
   clearInterval(intervalEnemyAppears)
+
   ctx.clearRect(0,0,canvas.width,canvas.height)
   ctx.drawImage(winner, 0, 0, canvas.width, canvas.height)
   ctx.font = '30px Arial'
@@ -284,7 +337,6 @@ function gameOver() {
 }
 
 //Functions to make the sound. The main theme I need to put it in a button.
-
 document.addEventListener('keydown', ({ keyCode }) => {
   if (keyCode >= 65 && keyCode <= 90) {
     machinegun.play()
@@ -292,17 +344,13 @@ document.addEventListener('keydown', ({ keyCode }) => {
 })
 
 document.addEventListener('keydown', ({ keyCode }) => {
-
   if (keyCode === 8) {
     playerWord = ''
   }
-
   let key = String.fromCharCode(keyCode)
   if (keyCode >= 65 && keyCode <= 90) {
     playerWord += key
-    //console.log(playerWord)
     }
-
   if (keyCode === 13) {
     if (playerWord.toLowerCase() != enemies[0].word) {
       playerWord = ''
@@ -316,14 +364,14 @@ document.addEventListener('keydown', ({ keyCode }) => {
   }
 )
 
-window.onload = function() {
-  document.getElementById("start").onclick = function() {
-    mainTheme.play()
-    startGame()
-  };
-};
 
-//startGame() //I have to past this to a start button
+document.getElementById("player1").onclick = function() {
+  mainTheme.play()
+  startGame()
+}
 
-
+document.getElementById("player2").onclick = function() {
+  mainTheme.play()
+  startGame()
+}
 
