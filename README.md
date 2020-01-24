@@ -1,6 +1,6 @@
 <p align="center">
   <a>
-    <img src="https://raw.githubusercontent.com/lslozano/LastStand/master/Images/Bg%20for%20slides.png" alt="Logo" width=100 height=100>
+    <img src="https://raw.githubusercontent.com/lslozano/LastStand/master/Images/Bg%20for%20slides.png" alt="Logo" width=300 height=300>
   </a>
 
   <h3 align="center">The Last Stand</h3>
@@ -32,10 +32,8 @@ The goal is to survive 150 seconds. Enemies will come from the right side on the
 
 ## Creators
 
-**Creator 1**
-
-- <https://github.com/lslozano>
+- [github](https://github.com/lslozano)
 
 ## Thanks
 
-[LOGO]: "https://raw.githubusercontent.com/lslozano/LastStand/master/Images/GameImage.png"
+[LOGO]: https://raw.githubusercontent.com/lslozano/LastStand/master/Images/GameImage.png
