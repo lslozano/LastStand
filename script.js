@@ -354,6 +354,7 @@ function gameOver() {
 //Functions to make the sound. The main theme I need to put it in a button.
 document.addEventListener('keydown', ({ keyCode }) => {
   if (keyCode >= 65 && keyCode <= 90) {
+    machinegun.currentTime = 0
     machinegun.play()
   }
 })
